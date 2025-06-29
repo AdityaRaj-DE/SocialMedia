@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="./css/style.css">
+  </head>
+  <body class="bg-white">
+    <nav class="flex flex-row justify-center gap-2">
+      <a class="px-4 py-3 text-lg text-[#101010] font-medium" href="/">Home</a>
+      <% if (user) { %>
+      <a class="px-4 py-3 text-lg text-[#101010] font-medium" href="/profile"
+        >Profile</a
+      >
+      <a class="px-4 py-3 text-lg text-[#101010] font-medium" href="/logout"
+        >Logout</a
+      >
+      <% } else { %>
+      <a class="px-4 py-3 text-lg text-[#101010] font-medium" href="/login"
+        >Login</a
+      >
+      <a class="px-4 py-3 text-lg text-[#101010] font-medium" href="/register"
+        >Register</a
+      >
+      <% } %>
+    </nav>
+    <h2 class="text-4xl text-center font-semibold text-[#101010] m-4">
+      Latest Post
+    </h2>
+    <div class="w-full max-w-4xl mx-auto p-6 rounded-lg h-[30rem] overflow-y-auto no-scrollbar">
+      <% if (posts && posts.length > 0) { %> 
+        <% posts.reverse().forEach(function(post) { %>
+      <div class="p-4 bg-white shadow-lg rounded-2xl mb-4 w-full">
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-[#0a3f55]  py-1 rounded-full font-semibold"><%= post.user ? post.user.name : 'Unknown' %></span>
+          <span class="text-xs text-[#0a3f55]">@<%= post.user ? post.user.username : 'unknown' %></span>
+        </div>
+        <p class="text-[#0a3f55] my-2 px-4 py-2 bg-[#eaeaea] rounded-3xl"><%= post.content %></p>
+        <div class="flex items-center gap-4">
+          <span class="text-[#0a3f55]">Likes: <%= post.likes ? post.likes.length : 0 %></span>
+          <% if (user) { %>
+          <form
+            action="/like/<%= post._id %>"
+            method="get"
+            style="display: inline"
+          >
+            <button
+              type="submit"
+              class="px-3 py-1 rounded-full text-xs bg-[#e93024] text-[#ece7e1]"
+            >
+              <% if (post.likes && post.likes.includes(user._id.toString())) {%> Unlike <% } else { %> Like <% } %>
+            </button>
+          </form>
+          <% } %>
+        </div>
+      </div>
+      <% }); %> 
+      <% } else { %>
+      <p class="text-gray-400">No posts yet.</p>
+      <% } %>
+    </div>
+  </body>
+</html>
