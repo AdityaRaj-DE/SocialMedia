@@ -6,13 +6,19 @@ const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const post = require("./models/post");
+const multer = require("multer");
+const memoryStorage = multer.memoryStorage();
+const uploadMemory = multer({ storage: memoryStorage });
+const upload = require("./config/multerconfig");
+const path = require("path");
 
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
-app.get("/", async (req, res) => {
+app.get("/",isloggedIn, async (req, res) => {
   let posts = await postModel.find({}).populate("user");
   let user = null;
   if (req.cookies.token && req.cookies.token !== "") {
@@ -25,6 +31,7 @@ app.get("/", async (req, res) => {
   }
   res.render("index", { posts, user });
 });
+
 app.get("/register", async (req, res) => {
   let posts = await postModel.find({}).populate("user");
   let user = null;
@@ -39,28 +46,52 @@ app.get("/register", async (req, res) => {
   res.render("register", { posts, user });
 });
 
+app.get("/profile/upload", isloggedIn, (req, res) => {
+  res.render("profileupload");
+});
+
+app.post("/upload", isloggedIn, uploadMemory.single("image"),async (req, res) => {
+  let user = await userModel.findOne({ email: req.user.email });
+  user.profilepic = req.file.filename;
+  res.redirect("/profile");
+});
+app.post("/uploadprofilepic", isloggedIn, upload.single("image"), async (req, res) => {
+  let user = await userModel.findOne({ email: req.user.email });
+  user.profilepic = req.file.filename;
+  await user.save()
+  res.redirect("/profile");
+});
+
 app.get("/login", (req, res) => {
   res.render("login");
 });
 
-app.post("/post", isloggedIn, async (req, res) => {
-  let user = await userModel.findOne({ email: req.user.email });
-  let { content } = req.body;
-  let post = await postModel.create({
-    user: user._id,
-    content,
-  });
+app.post(
+  "/post",
+  isloggedIn,
+  uploadMemory.single("photo"),
+  async (req, res) => {
+    let user = await userModel.findOne({ email: req.user.email });
+    let { content } = req.body;
+    let photo = req.file
+      ? { data: req.file.buffer, contentType: req.file.mimetype }
+      : undefined;
+    let post = await postModel.create({
+      user: user._id,
+      content,
+      photo,
+    });
 
-  user.posts.push(post._id);
-  await user.save();
-  res.redirect("/profile");
-});
+    user.posts.push(post._id);
+    await user.save();
+    res.redirect("/profile");
+  }
+);
 
 app.get("/profile", isloggedIn, async (req, res) => {
   let user = await userModel
     .findOne({ email: req.user.email })
     .populate("posts");
-
   res.render("profile", { user });
 });
 
@@ -78,13 +109,21 @@ app.get("/like/:id", isloggedIn, async (req, res) => {
 
 app.get("/edit/:id", isloggedIn, async (req, res) => {
   let post = await postModel.findOne({ _id: req.params.id }).populate("user");
-  res.render("edit", {post});
+  res.render("edit", { post });
 });
 
-app.post("/update/:id", isloggedIn, async (req, res) => {
-  let post = await postModel.findOneAndUpdate({ _id: req.params.id }, {content: req.body.content});
+app.post("/update/:id", isloggedIn, uploadMemory.single("photo"), async (req, res) => {
+  const update = { content: req.body.content };
+  if (req.file) {
+    update.photo = { data: req.file.buffer, contentType: req.file.mimetype };
+  }
+  await postModel.findOneAndUpdate(
+    { _id: req.params.id },
+    update
+  );
   res.redirect("/profile");
 });
+
 app.get("/delete/:id", isloggedIn, async (req, res) => {
   let post = await postModel.findOneAndDelete({ _id: req.params.id });
   res.redirect("/profile");
@@ -111,6 +150,11 @@ app.post("/register", async (req, res) => {
   });
 });
 
+app.get("/createpost",isloggedIn,async (req,res)=>{
+  let user = await userModel.findOne({ email: req.user.email });
+  res.render("createpost",{user});
+})
+
 app.post("/login", async (req, res) => {
   let { email, password } = req.body;
   let user = await userModel.findOne({ email });
@@ -128,6 +172,14 @@ app.post("/login", async (req, res) => {
 app.get("/logout", (req, res) => {
   res.cookie("token", "");
   res.redirect("/login");
+});
+
+app.get("/post/image/:id", isloggedIn, async (req, res) => {
+  const post = await postModel.findById(req.params.id);
+  if (!post || !post.photo || !post.photo.data)
+    return res.status(404).send("Image not found");
+  res.set("Content-Type", post.photo.contentType);
+  res.send(post.photo.data);
 });
 
 function isloggedIn(req, res, next) {

@@ -33,11 +33,17 @@
       <% if (posts && posts.length > 0) { %> 
         <% posts.reverse().forEach(function(post) { %>
       <div class="p-4 bg-white shadow-lg rounded-2xl mb-4 w-full">
-        <div class="flex justify-between items-center">
-          <span class="text-xs text-[#0a3f55]  py-1 rounded-full font-semibold"><%= post.user ? post.user.name : 'Unknown' %></span>
+        <div class="flex justify-between items-center p-2">
+          <div class="flex flex-row gap-3">
+            
+            <span class="text-xs text-[#0a3f55]  py-1 rounded-full font-semibold"><%= post.user ? post.user.name : 'Unknown' %></span>
+          </div>
           <span class="text-xs text-[#0a3f55]">@<%= post.user ? post.user.username : 'unknown' %></span>
         </div>
-        <p class="text-[#0a3f55] my-2 px-4 py-2 bg-[#eaeaea] rounded-3xl"><%= post.content %></p>
+        <% if (post.photo && post.photo.data) { %>
+          <img src="/post/image/<%= post._id %>" alt="Post Image" class="w-full mb-2 rounded-lg" />
+        <% } %>
+        <p class="text-[#0a3f55] my-2 px-4 py-2 rounded-3xl"><%= post.content %></p>
         <div class="flex items-center gap-4">
           <span class="text-[#0a3f55]">Likes: <%= post.likes ? post.likes.length : 0 %></span>
           <% if (user) { %>
