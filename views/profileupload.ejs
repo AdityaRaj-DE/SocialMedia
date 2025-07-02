@@ -19,10 +19,19 @@
       >
       
     </nav>
-    <h3>upload profile picture</h3>
-    <form autocomplete="off" action="/uploadprofilepic" method="post" enctype="multipart/form-data">
-        <input type="file" name="image">
-        <input type="submit" value="upload">
+    <h3 class="text-3xl mt-10 font-medium text-[#101010] text-center">Upload profile picture</h3>
+    <form autocomplete="off" action="/uploadprofilepic" method="post" enctype="multipart/form-data" class="flex flex-col justify-center items-center">
+        <input type="file" name="image" value="choose new file">
+        <input class="bg-[#101010] px-4 py-2 rounded-xl text-white font-medium" type="submit" value="Upload">
     </form>
+    <div class="flex flex-col justify-center w-full">
+      <h3 class="mt-10 text-center text-3xl font-medium text-[#101010]">Edit Profile Info</h3>
+    <form autocomplete="off" action="/editprofile" method="post" class="flex flex-col gap-2 justify-center items-center mt-2">
+      <input type="text" name="name" placeholder="Name" class="border-2 w-96 border-zinc-300 p-2 rounded-xl" value="<%= user.name %>" required />
+      <input type="number" name="age" placeholder="Age" class="border-2 w-96 border-zinc-300 p-2 rounded-xl" value="<%= user.age %>" required />
+      <input type="password" name="password" placeholder="New Password (leave blank to keep current)" class="border-2 w-96 border-zinc-300 p-2 rounded-xl" />
+      <input class="bg-[#101010] px-4 mt-2 py-2 rounded-xl text-white font-medium" type="submit" value="Update Profile">
+    </form>
+    </div>
   </body>
 </html>

@@ -46,8 +46,9 @@ app.get("/register", async (req, res) => {
   res.render("register", { posts, user });
 });
 
-app.get("/profile/upload", isloggedIn, (req, res) => {
-  res.render("profileupload");
+app.get("/profile/upload", isloggedIn, async (req, res) => {
+  let user = await userModel.findOne({ email: req.user.email });
+  res.render("profileupload", { user });
 });
 
 app.post("/upload", isloggedIn, uploadMemory.single("image"),async (req, res) => {
@@ -180,6 +181,20 @@ app.get("/post/image/:id", isloggedIn, async (req, res) => {
     return res.status(404).send("Image not found");
   res.set("Content-Type", post.photo.contentType);
   res.send(post.photo.data);
+});
+
+app.post("/editprofile", isloggedIn, async (req, res) => {
+  let user = await userModel.findOne({ email: req.user.email });
+  const { name, age, password } = req.body;
+  user.name = name;
+  user.age = age;
+  if (password && password.trim() !== "") {
+    const bcrypt = require("bcrypt");
+    const hash = await bcrypt.hash(password, 10);
+    user.password = hash;
+  }
+  await user.save();
+  res.redirect("/profile");
 });
 
 function isloggedIn(req, res, next) {
