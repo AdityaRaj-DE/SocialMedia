@@ -1,26 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SocialMedia</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
-<body class="bg-white">
+  </head>
+  <body class="bg-white">
     <nav class="flex flex-row justify-center gap-2">
-        <a class="px-4 py-3 text-lg text-[#101010] font-medium " href="/">Home</a>
-        <a class="px-4 py-3 text-lg text-[#101010] font-medium" href="/login">Login</a>
+      <a class="px-4 py-3 text-lg text-[#101010] font-medium" href="/">Home</a>
+      <a class="px-4 py-3 text-lg text-[#101010] font-medium" href="/login"
+        >Login</a
+      >
     </nav>
     <div class="w-full min-h-screen text-center p-10">
-        <h3 class="text-3xl text-[#101010] m-5">Create Account</h3>
-        <form action="/register" method="post" class="flex flex-col justify-center items-center">
-            <input class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300 " type="text" name="name" placeholder="name" id="">
-            <input class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300 " type="number" name="age" placeholder="age" id="">
-            <input class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300 " type="text" name="username" placeholder="username" id="">
-            <input class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300 " type="password" name="password" placeholder="password" id="">
-            <input class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300 " type="email" name="email" placeholder="email" id="">
-            <input class="px-3 py-2 m-2 bg-[#101010] text-white font-bold rounded-xl" type="submit" value="Create Account">
-        </form>
+      <h3 class="text-3xl text-[#101010] m-5">Create Account</h3>
+      <form
+        action="/register"
+        method="post"
+        class="flex flex-col justify-center items-center"
+      >
+        <input
+          class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300"
+          type="text"
+          name="name"
+          placeholder="name"
+          id=""
+        />
+        <input
+          class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300"
+          type="number"
+          name="age"
+          placeholder="age"
+          id=""
+        />
+        <input
+          class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300"
+          type="text"
+          name="username"
+          placeholder="username"
+          id=""
+        />
+        <input
+          class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300"
+          type="password"
+          name="password"
+          placeholder="password"
+          id=""
+        />
+        <input
+          class="px-3 py-2 outline-none w-80 text-[#101010] m-2 rounded-xl bg-transparent border-2 border-zinc-300"
+          type="email"
+          name="email"
+          placeholder="email"
+          id=""
+        />
+        <input
+          class="px-3 py-2 m-2 bg-[#101010] text-white font-bold rounded-xl"
+          type="submit"
+          value="Create Account"
+        />
+      </form>
     </div>
-</body>
+  </body>
 </html>
