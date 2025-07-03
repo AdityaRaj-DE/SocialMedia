@@ -26,51 +26,53 @@
       >
       <% } %>
     </nav>
-    <h2 class="text-4xl text-center font-semibold text-[#101010] m-4">
-      Latest Post
-    </h2>
-    <div class="w-full mx-auto p-6 rounded-lg h-[30rem] overflow-y-auto no-scrollbar">
-      <% if (posts && posts.length > 0) { %> 
-        <div class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-          <% posts.reverse().forEach(function(post) { %>
-          <div class="break-inside-avoid p-1 bg-[#f7f7f7] rounded-2xl w-full">
-            
-            <% if (post.photo && post.photo.data) { %>
-              <img src="/post/image/<%= post._id %>" alt="Post Image" class="w-full mb-2 rounded-xl" />
-            <% } %>
-            <p class="text-black font-medium px-2"><%= post.content %></p>
-            
-            <div class="flex items-center justify-between gap-4">
-              <div class="flex justify-between items-center p-2">
-                <div class="flex flex-row gap-3">
-                  <span class="text-xs text-zinc-800 rounded-full font-semibold"><%= post.user ? post.user.name : 'Unknown' %></span>
-                </div>
-                <span class="text-xs mx-1 text-zinc-700">@<%= post.user ? post.user.username : 'unknown' %></span>
-              </div>
-              <div>
-                <span class="text-[#101010] text-sm font-medium">Likes: <%= post.likes ? post.likes.length : 0 %></span>
-              <% if (user) { %>
-              <form
-                action="/like/<%= post._id %>"
-                method="get"
-                style="display:inline "
-              >
-                <button
-                  type="submit"
-                  class="px-3 py-1 rounded-xl text-[0.6rem] font-medium bg-[#e93024] text-[#ece7e1]"
-                >
-                  <% if (post.likes && post.likes.includes(user._id.toString())) {%> Unlike <% } else { %> Like <% } %>
-                </button>
-              </form>
+    <div class="overflow-y-scroll h-[35rem] rounded-2xl">
+      <h2 class="text-4xl text-center font-semibold text-[#101010] m-4">
+        Latest Post
+      </h2>
+      <div class="w-full mx-auto p-6 rounded-lg">
+        <% if (posts && posts.length > 0) { %> 
+          <div class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-2 space-y-4">
+            <% posts.reverse().forEach(function(post) { %>
+            <div class="break-inside-avoid p-1 bg-[#f7f7f7] rounded-2xl w-full">
+              
+              <% if (post.photo && post.photo.data) { %>
+                <img src="/post/image/<%= post._id %>" alt="Post Image" class="w-full mb-2 rounded-xl" />
               <% } %>
+              <p class="text-black font-medium px-2"><%= post.content %></p>
+              
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex justify-between items-center p-2">
+                  <div class="flex flex-row gap-3">
+                    <span class="text-xs text-zinc-800 rounded-full font-semibold"><%= post.user ? post.user.name : 'Unknown' %></span>
+                  </div>
+                  <span class="text-xs mx-1 text-zinc-700">@<%= post.user ? post.user.username : 'unknown' %></span>
+                </div>
+                <div>
+                  <span class="text-[#101010] text-sm font-medium">Likes: <%= post.likes ? post.likes.length : 0 %></span>
+                <% if (user) { %>
+                <form
+                  action="/like/<%= post._id %>"
+                  method="get"
+                  style="display:inline "
+                >
+                  <button
+                    type="submit"
+                    class="px-3 py-1 rounded-xl text-[0.6rem] font-medium bg-[#101010] text-[#ece7e1]"
+                  >
+                    <% if (post.likes && post.likes.includes(user._id.toString())) {%> Unlike <% } else { %> Like <% } %>
+                  </button>
+                </form>
+                <% } %>
+                </div>
               </div>
             </div>
+            <% }); %>
           </div>
-          <% }); %>
-        </div>
-      <% } else { %>
-      <p class="text-gray-400">No posts yet.</p>
-      <% } %>
+        <% } else { %>
+        <p class="text-gray-400">No posts yet.</p>
+        <% } %>
+      </div>
     </div>
   </body>
 </html>

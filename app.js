@@ -1,6 +1,7 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
-const userModel = require("./models/user");
+const { User, connect } = require("./models/user");
 const postModel = require("./models/post");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
@@ -11,6 +12,8 @@ const memoryStorage = multer.memoryStorage();
 const uploadMemory = multer({ storage: memoryStorage });
 const upload = require("./config/multerconfig");
 const path = require("path");
+
+connect();
 
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -24,7 +27,7 @@ app.get("/",isloggedIn, async (req, res) => {
   if (req.cookies.token && req.cookies.token !== "") {
     try {
       let data = jwt.verify(req.cookies.token, "shhhh");
-      user = await userModel.findById(data.userid);
+      user = await User.findById(data.userid);
     } catch (e) {
       user = null;
     }
@@ -38,7 +41,7 @@ app.get("/register", async (req, res) => {
   if (req.cookies.token && req.cookies.token !== "") {
     try {
       let data = jwt.verify(req.cookies.token, "shhhh");
-      user = await userModel.findById(data.userid);
+      user = await User.findById(data.userid);
     } catch (e) {
       user = null;
     }
@@ -47,17 +50,17 @@ app.get("/register", async (req, res) => {
 });
 
 app.get("/profile/upload", isloggedIn, async (req, res) => {
-  let user = await userModel.findOne({ email: req.user.email });
+  let user = await User.findOne({ email: req.user.email });
   res.render("profileupload", { user });
 });
 
 app.post("/upload", isloggedIn, uploadMemory.single("image"),async (req, res) => {
-  let user = await userModel.findOne({ email: req.user.email });
+  let user = await User.findOne({ email: req.user.email });
   user.profilepic = req.file.filename;
   res.redirect("/profile");
 });
 app.post("/uploadprofilepic", isloggedIn, upload.single("image"), async (req, res) => {
-  let user = await userModel.findOne({ email: req.user.email });
+  let user = await User.findOne({ email: req.user.email });
   user.profilepic = req.file.filename;
   await user.save()
   res.redirect("/profile");
@@ -72,7 +75,7 @@ app.post(
   isloggedIn,
   uploadMemory.single("photo"),
   async (req, res) => {
-    let user = await userModel.findOne({ email: req.user.email });
+    let user = await User.findOne({ email: req.user.email });
     let { content } = req.body;
     let photo = req.file
       ? { data: req.file.buffer, contentType: req.file.mimetype }
@@ -90,7 +93,7 @@ app.post(
 );
 
 app.get("/profile", isloggedIn, async (req, res) => {
-  let user = await userModel
+  let user = await User
     .findOne({ email: req.user.email })
     .populate("posts");
   res.render("profile", { user });
@@ -132,12 +135,12 @@ app.get("/delete/:id", isloggedIn, async (req, res) => {
 
 app.post("/register", async (req, res) => {
   let { email, password, username, name, age } = req.body;
-  let user = await userModel.findOne({ email });
+  let user = await User.findOne({ email });
   if (user) return res.status(500).send("user already register");
 
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(password, salt, async (err, hash) => {
-      let user = await userModel.create({
+      let user = await User.create({
         username,
         email,
         age,
@@ -152,13 +155,13 @@ app.post("/register", async (req, res) => {
 });
 
 app.get("/createpost",isloggedIn,async (req,res)=>{
-  let user = await userModel.findOne({ email: req.user.email });
+  let user = await User.findOne({ email: req.user.email });
   res.render("createpost",{user});
 })
 
 app.post("/login", async (req, res) => {
   let { email, password } = req.body;
-  let user = await userModel.findOne({ email });
+  let user = await User.findOne({ email });
   if (!user) return res.status(500).send("something went wrong");
 
   bcrypt.compare(password, user.password, function (err, result) {
@@ -184,7 +187,7 @@ app.get("/post/image/:id", isloggedIn, async (req, res) => {
 });
 
 app.post("/editprofile", isloggedIn, async (req, res) => {
-  let user = await userModel.findOne({ email: req.user.email });
+  let user = await User.findOne({ email: req.user.email });
   const { name, age, password } = req.body;
   user.name = name;
   user.age = age;
@@ -206,4 +209,4 @@ function isloggedIn(req, res, next) {
   }
 }
 
-app.listen(3000);
+app.listen(process.env.PORT);
