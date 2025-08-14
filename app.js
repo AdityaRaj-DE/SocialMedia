@@ -20,8 +20,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
-
-app.get("/",isloggedIn, async (req, res) => {
+app.get("/",(req,res)=>{
+  res.redirect("/login");
+})
+app.get("/home",isloggedIn, async (req, res) => {
   let posts = await postModel.find({}).populate("user");
   let user = null;
   if (req.cookies.token && req.cookies.token !== "") {
@@ -108,7 +110,7 @@ app.get("/like/:id", isloggedIn, async (req, res) => {
   }
 
   await post.save();
-  res.redirect("/");
+  res.redirect("/home");
 });
 
 app.get("/edit/:id", isloggedIn, async (req, res) => {
@@ -149,7 +151,7 @@ app.post("/register", async (req, res) => {
       });
       let token = jwt.sign({ email: email, userid: user._id }, "shhhh");
       res.cookie("token", token);
-      res.redirect("/");
+      res.redirect("/home");
     });
   });
 });
@@ -168,7 +170,7 @@ app.post("/login", async (req, res) => {
     if (result) {
       let token = jwt.sign({ email: email, userid: user._id }, "shhhh");
       res.cookie("token", token);
-      res.status(200).redirect("/");
+      res.status(200).redirect("/home");
     } else res.redirect("/login");
   });
 });
